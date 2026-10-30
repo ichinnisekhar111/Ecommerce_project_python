@@ -8,8 +8,9 @@ class User:
     def user_info(self):
         return f'{self.id},{self.username},{self.password},{self.role}\n'
 
-class Authentication:
 
+
+class Authentication:
     def register(self):
         id = int(input("Enter user ID : "))
         username = input("Enter your username : ")
@@ -30,7 +31,6 @@ class Authentication:
         with open('users.txt','a') as f:
             f.write(user_data)
             print("Registration successful")
-
 
     def login(self):
         username = input("Enter your username : ")
@@ -63,6 +63,8 @@ class Product:
     def product_info(self):
         return f"{self.id},{self.name},{self.price},{self.quantity}\n"
 
+
+
 class Admin:
     def add_product(self):
 
@@ -93,9 +95,128 @@ class Admin:
                 print("Product Added successfully")
 
 
+    def delete_product(self):
+        id = int(input("Enter product ID : "))
+        with open('products.txt','r') as f:
+            data= f.readlines()
+
+        if len(data) == 0:
+            print('No Products Available!')
+            return
+
+        is_found =False
+        with open('products.txt','w') as f:
+            for line in data:
+                details = line.strip().split(',')
+                db_product_id = int(details[0])
+                if db_product_id == id:
+                    is_found= True
+                else:
+                    f.write(line)
+        if is_found:
+            print("Product deleted successfully")
+        else:
+            print("Product not found")
+
+
+    def update_product(self):
+        with open('products.txt','r') as f:
+            data= f.readlines()
+
+        if len(data) == 0:
+            print('No Products Available!')
+            return
+
+        is_found = False
+        id = int(input("Enter product ID : "))
+
+        with open("products.txt",'w') as f:
+            for line in data:
+                details = line.strip().split(',')
+                db_product_id = int(details[0])
+                if db_product_id ==id:
+                    is_found = True
+                    print("what you want to update")
+                    choice = int(input("1.Name \n2.Price \n3.Quantity \n4.All details \n"))
+                    match choice:
+                        case 1:
+                            new_name = input("Enter new name: ")
+                            f.write(f"{details[0]},{new_name},{details[2]},{details[3]}\n")
+                            print("Product Name updated successfully")
+                        case 2:
+                            new_price = input("Enter new price: ")
+                            f.write(f"{details[0]},{details[1]},{new_price},{details[3]}\n")
+                            print("Product updated successfully")
+                        case 3:
+                            new_quantity = input("Enter new quantity: ")
+                            f.write(f"{details[0]},{details[1]},{details[2]},{new_quantity}\n")
+                            print("Product quantity updated successfully")
+                        case 4:
+                            new_name = input("Enter new name: ")
+                            new_price = input("Enter new price: ")
+                            new_quantity = input("Enter new quantity: ")
+                            f.write(f"{details[0]},{new_name},{new_price},{new_quantity}\n")
+                            print("All details updated successfully")
+                        case _:
+                            print("Invalid choice")
+                            f.write(line)
+                else:
+                    f.write(line)
+                    
+        if not is_found:
+            print("Product Not Found")    
+
+        
+    def search_product(self):
+        with open('products.txt','r') as f:
+            data= f.readlines()
+
+        if len(data) == 0:
+            print('No Products Available!')
+            return
+
+        id = int(input("Enter product ID : "))
+        for line in data:
+            details = line.strip().split(',')
+            db_product_id = int(details[0])
+            if db_product_id == id:
+                print('-------------------------------------')
+                print('|ID   |NAME      |PRICE  |QUANTITY  |')
+                print('-------------------------------------')
+                print(f'|{details[0]+' '*(5-len(details[0]))}|{details[1]+' '*(10-len(details[1]))}|{details[2]+' '*(7-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|')
+                print('-------------------------------------')
+                return
+        print("Product not found")
+
+
+    def view_all_products(self):
+        with open('products.txt','r') as f:
+            data= f.readlines()
+
+        if len(data) == 0:
+            print('No Products Available!')
+            return
+
+        print('-------------------------------------')
+        print('|ID   |NAME      |PRICE  |QUANTITY  |')
+        print('-------------------------------------')
+        for line in data:
+            details = line.strip().split(',')      
+            print(f'|{details[0]+' '*(5-len(details[0]))}|{details[1]+' '*(10-len(details[1]))}|{details[2]+' '*(7-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|')
+        print('-------------------------------------')
+        
+
+        
+
+
+        
 
 auth = Authentication()
 # auth.login()
 admin = Admin()
-admin.add_product()
-        
+# admin.add_product()
+# admin.delete_product()
+# admin.search_product()
+# admin.update_product()
+# admin.view_all_products()
+
