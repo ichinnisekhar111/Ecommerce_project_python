@@ -307,8 +307,31 @@ class Cart(Admin):
         
         else:
             print("product is not found")
-
         
+    
+    def view_cart(self):
+        with open("cart.txt",'r') as f:
+            data = f.readlines()
+        if len(data) == 0:
+            print("Your Cart is empty ")
+        else:
+            is_found = False
+            for line in data:
+                details = line.strip().split(',')
+                if int(details[0]) == self.user_id:
+                    is_found = True
+
+            if is_found:
+                print('----------------------------------')
+                print('|NAME      |PRICE     |QUANTITY  |')
+                print('----------------------------------')
+                for line in data:
+                    details = line.strip().split(',')
+                    if int(details[0]) == self.user_id:
+                        print(f"|{details[2]+ ' '* (10-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|{details[4]+' '*(10-len(details[4]))}|")
+                print('----------------------------------')
+            else:
+                print("Your cart is empty !")
         
 
 
@@ -327,5 +350,7 @@ admin = Admin()
 cart = Cart(101)
 # cart.view_all_products()
 # cart.add_product_to_cart()
-cart.decrease_product()
+# cart.decrease_product()
+cart.view_cart()
+
 
