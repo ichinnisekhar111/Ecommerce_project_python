@@ -1,1 +1,2 @@
-101,Chinni,chinni123,user
+101,chinni,chinni123,user
+102,sekhar,sekhar123,admin

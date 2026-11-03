@@ -9,7 +9,6 @@ class User:
         return f'{self.id},{self.username},{self.password},{self.role}\n'
 
 
-
 class Authentication:
     def register(self):
         id = int(input("Enter user ID : "))
@@ -47,11 +46,10 @@ class Authentication:
             if db_username == username and db_password == password:
                 is_found = True
                 print("Login Successful")
-                return details[0]
+                return details[0],details[3]
                 
         if not is_found:
             print("Invalid Credentials")
-
 
 
 class Product:
@@ -63,7 +61,6 @@ class Product:
 
     def product_info(self):
         return f"{self.id},{self.name},{self.price},{self.quantity}\n"
-
 
 
 class Admin:
@@ -204,13 +201,13 @@ class Admin:
         for line in data:
             details = line.strip().split(',')      
             print(f'|{details[0]+' '*(5-len(details[0]))}|{details[1]+' '*(10-len(details[1]))}|{details[2]+' '*(7-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|')
-        print('-------------------------------------')
-        
+        print('-------------------------------------')       
 
 
-class Cart(Admin):
+class Cart:
     def __init__(self,user_id):
         self.user_id = user_id
+
 
     def add_product_to_cart(self):
         with open('products.txt','r') as f:
@@ -232,7 +229,7 @@ class Cart(Admin):
                     with open('cart.txt','w') as f:
                         for line in cart_data:
                             details2 = line.strip().split(',')
-                            if details2[2] == name and int(details2[0]) == self.user_id:
+                            if details2[2] == name and int(details2[0]) == int(self.user_id):
                                 cart_flag =True
                                 new_quantity = int(details2[4]) + 1
                                 f.write(f"{details2[0]},{details2[1]},{details2[2]},{details2[3]},{new_quantity}\n")
@@ -275,7 +272,7 @@ class Cart(Admin):
             is_found = False
             for line in cart_data:
                 details = line.strip().split(',')
-                if details[2] == name and int(details[0]) == self.user_id:
+                if details[2] == name and int(details[0]) == int(self.user_id):
                     if int(details[4]) > 1:
                         is_found = True
                         present_product = details
@@ -307,6 +304,23 @@ class Cart(Admin):
         
         else:
             print("product is not found")
+
+
+    def view_all_products(self):
+        with open('products.txt','r') as f:
+            data= f.readlines()
+
+        if len(data) == 0:
+            print('No Products Available!')
+            return
+
+        print('-------------------------------------')
+        print('|ID   |NAME      |PRICE  |QUANTITY  |')
+        print('-------------------------------------')
+        for line in data:
+            details = line.strip().split(',')      
+            print(f'|{details[0]+' '*(5-len(details[0]))}|{details[1]+' '*(10-len(details[1]))}|{details[2]+' '*(7-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|')
+        print('-------------------------------------')
         
     
     def view_cart(self):
@@ -318,7 +332,7 @@ class Cart(Admin):
             is_found = False
             for line in data:
                 details = line.strip().split(',')
-                if int(details[0]) == self.user_id:
+                if int(details[0]) == int(self.user_id):
                     is_found = True
 
             if is_found:
@@ -327,7 +341,7 @@ class Cart(Admin):
                 print('----------------------------------')
                 for line in data:
                     details = line.strip().split(',')
-                    if int(details[0]) == self.user_id:
+                    if int(details[0]) == int(self.user_id):
                         print(f"|{details[2]+ ' '* (10-len(details[2]))}|{details[3]+' '*(10-len(details[3]))}|{details[4]+' '*(10-len(details[4]))}|")
                 print('----------------------------------')
             else:
@@ -337,9 +351,7 @@ class Cart(Admin):
 
 
 
-auth = Authentication()
-# auth.login()
-admin = Admin()
+
 # admin.add_product()
 # admin.delete_product()
 # admin.search_product()
@@ -347,10 +359,69 @@ admin = Admin()
 # admin.view_all_products()
 
 # user_id = auth.login()
-cart = Cart(101)
+# cart = Cart(101)
 # cart.view_all_products()
 # cart.add_product_to_cart()
 # cart.decrease_product()
-cart.view_cart()
+# cart.view_cart()
+
+auth = Authentication()
+print("Welcome to Ecommerce Application...")
+while True:
+    print("\n1. Register")
+    print("2. Login")
+    print("3. Exit")
+    choice = int(input("Enter your choice: "))
+    match choice:
+        case 1:
+            auth.register()
+        case 2:
+            user_details = auth.login()
+            if user_details != None:
+                if user_details[1] == 'user':
+                    cart = Cart(user_details[0])
+                    while True:
+                        print("\n1. View all Products")
+                        print("2. Add Product To Cart")
+                        print("3. Decrease Product ")
+                        print("4. View Cart")
+                        print("5. Logout")
+                        choice = int(input("Enter your choice: "))
+                        match choice:
+                            case 1: cart.view_all_products()
+                            case 2: cart.add_product_to_cart()
+                            case 3: cart.decrease_product()
+                            case 4: cart.view_cart()
+                            case 5: 
+                                print("\nLogged out successfully...")
+                                break
+                            case _: print("Invalid choice")
+                    
+                else:
+                    admin = Admin()
+                    while True:
+                        print("\n1. Add Product")
+                        print("2. Delete Product")
+                        print("3. Update Product")
+                        print("4. Search Product")
+                        print("5. View all Products")
+                        print("6. Logout")
+                        choice = int(input("Enter your choice: "))
+                        match choice:
+                            case 1: admin.add_product()
+                            case 2: admin.delete_product()
+                            case 3: admin.update_product()
+                            case 4: admin.search_product()
+                            case 5: admin.view_all_products()
+                            case 6: 
+                                print("\nLogged out successfully...")
+                                break
+                            case _: print("Invalid choice")
+        case 3:
+            print("\nThank you! Visit Again...")
+            break
+        case _:
+            print("Invalid choice")
+                    
 
 
